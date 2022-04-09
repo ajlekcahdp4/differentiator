@@ -1,0 +1,5 @@
+- rewrite lexer to more difficult functions
+    - sin()
+    - cos()
+    - x^n
+    - exp()

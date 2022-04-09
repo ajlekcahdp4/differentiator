@@ -1,0 +1,8 @@
+*.dat
+*.res
+*.txt
+*.o
+*.out
+vgcore.*
+.vscode
+differentiate
