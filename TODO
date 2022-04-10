@@ -1,5 +1,7 @@
-- rewrite lexer to more difficult functions
+- rewrite lexer to more difficult functions ( done 09.04 )
     - sin()
     - cos()
     - x^n
     - exp()
+    - ln ()
+- write parser
