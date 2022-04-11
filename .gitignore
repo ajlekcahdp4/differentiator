@@ -1,6 +1,8 @@
 *.dat
 *.res
 *.txt
+*.png
+*.dot
 *.o
 *.out
 vgcore.*
