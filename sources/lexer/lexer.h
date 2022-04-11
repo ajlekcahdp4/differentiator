@@ -4,7 +4,7 @@
 #define MAXLEN 1024
 
 enum lexem_kind_t { OP, BRACE, VAR, NUM };
-enum operation_t { ADD, SUB, MUL, DIV, SIN, COS, EXP, LOG, DEG};
+enum operation_t { ADD, SUB, MUL, DIV, SIN, COS, EXP, LOG, DEG };
 enum braces_t { LBRAC, RBRAC };
 
 struct lexem_t {

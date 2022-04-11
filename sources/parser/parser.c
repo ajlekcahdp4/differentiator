@@ -52,6 +52,15 @@ int is_mul ( struct lexer_state *pstate)
         return 0;
     return 1;
 }
+int is_div (struct lexer_state *pstate)
+{
+    struct lexem_t cur = current (pstate);
+    if (cur.kind != OP)
+        return 0;
+    if (cur.lex.op != DIV)
+        return 0;
+    return 1;
+}
 
 int is_l_brace ( struct lexer_state *pstate)
 {
@@ -88,6 +97,65 @@ int is_var (struct lexer_state *pstate)
         return 0;
     return 1;
 }
+int is_op (struct lexer_state *pstate)
+{
+    struct lexem_t cur = current (pstate);
+    if (cur.kind != OP)
+        return 0;
+    return 1;
+}
+
+int is_sin (struct lexer_state *pstate)
+{
+    struct lexem_t cur = current (pstate);
+    if (cur.kind != OP)
+        return 0;
+    if (cur.lex.op != SIN)
+        return 0;
+    return 1;
+}
+
+int is_cos (struct lexer_state *pstate)
+{
+    struct lexem_t cur = current (pstate);
+    if (cur.kind != OP)
+        return 0;
+    if (cur.lex.op != COS)
+        return 0;
+    return 1;
+}
+
+int is_log (struct lexer_state *pstate)
+{
+    struct lexem_t cur = current (pstate);
+    if (cur.kind != OP)
+        return 0;
+    if (cur.lex.op != LOG)
+        return 0;
+    return 1;
+}
+
+int is_deg (struct lexer_state *pstate)
+{
+    struct lexem_t cur = current (pstate);
+    if (cur.kind != OP)
+        return 0;
+    if (cur.lex.op != DEG)
+        return 0;
+    return 1;
+}
+
+
+int is_exp (struct lexer_state *pstate)
+{
+    struct lexem_t cur = current (pstate);
+    if (cur.kind != OP)
+        return 0;
+    if (cur.lex.op != EXP)
+        return 0;
+    return 1;
+}
+
 
 
 // expr ::= term {+, -} term | term
@@ -126,7 +194,7 @@ struct node_t *parse_expr (struct lexer_state *pstate)
 
 
 
-// term ::= factor {*, /} factor | factor
+// term ::= factor {*, /, ^} factor | factor
 struct node_t *parse_term  (struct lexer_state *pstate)
 {
     struct node_t *lhs  = NULL;
@@ -136,13 +204,16 @@ struct node_t *parse_term  (struct lexer_state *pstate)
     lhs = parse_factor (pstate);
     term = lhs;
 
-    while (pstate->cur < pstate->lexarr.size && current(pstate).kind == OP && is_mul_div (pstate))
+    while (pstate->cur < pstate->lexarr.size && current(pstate).kind == OP && (is_mul_div (pstate) || is_deg (pstate)))
     {
         temp = calloc (1, sizeof (struct node_t));
         temp->data.kind   = OP;
-        temp->data.lex.op = DIV;
-        if (is_mul (pstate))
+        if (is_div (pstate))
+            temp->data.lex.op = DIV;
+        else if (is_mul (pstate))
             temp->data.lex.op = MUL;
+        else //deg
+            temp->data.lex.op = DEG;
         pstate->cur += 1;
 
         rhs = parse_factor (pstate);
@@ -158,7 +229,7 @@ struct node_t *parse_term  (struct lexer_state *pstate)
     return term;
 }
 
-// factor ::= ( expr ) | number
+// factor ::= ( expr ) | number | {sin(expr), cos(expr), ln (expr), exp (expr)}
 struct node_t *parse_factor (struct lexer_state *pstate)
 {
     struct node_t *expr = NULL;
@@ -195,6 +266,52 @@ struct node_t *parse_factor (struct lexer_state *pstate)
             return var;
         }
     }
+    if (is_op(pstate))
+    {
+        if (is_sin (pstate))
+        {
+            struct node_t *sin = calloc (1, sizeof(struct node_t));
+            sin->data.kind = OP;
+            sin->data.lex.op = current(pstate).lex.op;
+            pstate->cur += 1;
+            sin->left = parse_factor (pstate);
+            return sin;
+        }
+        else if (is_cos (pstate))
+        {
+            struct node_t *cos = calloc (1, sizeof(struct node_t));
+            cos->data.kind = OP;
+            cos->data.lex.op = current(pstate).lex.op;
+            pstate->cur += 1;
+            cos->left = parse_factor (pstate);
+            return cos;
+        }
+        else if (is_log (pstate))
+        {
+            
+            struct node_t *log = calloc (1, sizeof(struct node_t));
+            log->data.kind = OP;
+            log->data.lex.op = current(pstate).lex.op;
+            pstate->cur += 1;
+            log->left = parse_factor (pstate);
+            return log;
+        }
+        else if (is_exp (pstate))
+        {
+            
+            struct node_t *exp = calloc (1, sizeof(struct node_t));
+            exp->data.kind = OP;
+            exp->data.lex.op = current(pstate).lex.op;
+            pstate->cur += 1;
+            exp->left = parse_factor (pstate);
+            return exp;
+        }
+        else
+        {
+            fprintf (stderr, "ERROR: unexpected command in parsing factor\n");
+            exit (0);
+        }
+    }
     return NULL;
 }
 
@@ -207,7 +324,7 @@ struct node_t *build_syntax_tree(struct lex_array_t lexarr)
     res = parse_expr (&ls);
     if (ls.cur != ls.lexarr.size && res != 0)
     {
-        printf ("ERROR\n");
+        printf ("ERROR: error while building syntax tree\n");
         return 0;
     }
     return res;

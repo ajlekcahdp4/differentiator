@@ -5,3 +5,4 @@
     - exp()
     - ln ()
 - write parser
+    - Change deg priority

@@ -1,17 +1,17 @@
 digraph G {
 rankdir = TB
-Node0x55ec034a4cb0 [style=filled, fillcolor = "palegreen" ,label="+"];
-Node0x55ec034a4c50 [style=filled, fillcolor = "palegreen" ,label="/"];
-Node0x55ec034a4c20 [style=filled, fillcolor = "palegreen" ,label="2"];
-Node0x55ec034a4c80 [style=filled, fillcolor = "palegreen" ,label="x"];
-Node0x55ec034a4ce0 [style=filled, fillcolor = "palegreen" ,label="4"];
-Node0x55ec034a4cb0->Node0x55ec034a4c50
-Node0x55ec034a4c50->Node0x55ec034a4c20
+Node0x562b0b144c80 [style=filled, fillcolor = "palegreen" ,label="*"];
+Node0x562b0b144c20 [style=filled, fillcolor = "palegreen" ,label="^"];
+Node0x562b0b144bf0 [style=filled, fillcolor = "palegreen" ,label="2"];
+Node0x562b0b144c50 [style=filled, fillcolor = "palegreen" ,label="12"];
+Node0x562b0b144cb0 [style=filled, fillcolor = "palegreen" ,label="2"];
+Node0x562b0b144c80->Node0x562b0b144c20
+Node0x562b0b144c20->Node0x562b0b144bf0
 
-Node0x55ec034a4c50->Node0x55ec034a4c80
+Node0x562b0b144c20->Node0x562b0b144c50
 
 
-Node0x55ec034a4cb0->Node0x55ec034a4ce0
+Node0x562b0b144c80->Node0x562b0b144cb0
 
 
 }

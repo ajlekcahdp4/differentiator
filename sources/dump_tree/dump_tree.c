@@ -32,6 +32,21 @@ void DtSetNode (FILE* dotfile, struct node_t *node)
                 case DIV:
                     fprintf (dotfile, "/");
                     break;
+                case SIN:
+                    fprintf (dotfile, "sin");
+                    break;
+                case COS:
+                    fprintf (dotfile, "cos");
+                    break;
+                case LOG:
+                    fprintf (dotfile, "log");
+                    break;
+                case EXP:
+                    fprintf (dotfile, "exp");
+                    break;
+                case DEG:
+                    fprintf (dotfile, "^");
+                    break;
                 default:
                     printf ("ERROR: unknown operators type\n");
                     break;
