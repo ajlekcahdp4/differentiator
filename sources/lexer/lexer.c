@@ -39,7 +39,7 @@ char *ReadVar (const char *buf, int i)
     char *str = calloc (MAX_VAR_LEN, sizeof(char));
     assert (str);
     char c = buf[i];
-    while (c != '\0' && c != '\n' && c != EOF && !isspace(buf[i]) && !is_brace(buf[i]))
+    while (isalpha(c))
     {
         str[j] = c;
         j += 1;
