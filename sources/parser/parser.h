@@ -27,6 +27,7 @@ int is_l_brace    (struct lexer_state *pstate);
 int is_r_brace    (struct lexer_state *pstate);
 int is_number     (struct lexer_state *pstate);
 
+struct node_t *parse_deg (struct lexer_state *pstate);
 struct node_t *parse_term   (struct lexer_state *pstate);
 struct node_t *parse_expr   (struct lexer_state *pstate);
 struct node_t *parse_factor (struct lexer_state *pstate);

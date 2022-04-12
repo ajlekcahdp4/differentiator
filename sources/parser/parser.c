@@ -169,7 +169,7 @@ struct node_t *parse_expr (struct lexer_state *pstate)
     lhs = parse_term (pstate);
     expr = lhs;
 
-    while (pstate->cur < pstate->lexarr.size && current(pstate).kind == OP && is_plus_minus (pstate))
+    while (pstate->cur < pstate->lexarr.size && is_plus_minus (pstate))
     {
         temp = calloc (1, sizeof (struct node_t));
         temp->data.kind   = OP;
@@ -194,29 +194,26 @@ struct node_t *parse_expr (struct lexer_state *pstate)
 
 
 
-// term ::= factor {*, /, ^} factor | factor
+// term ::= deg {*, /, ^} deg | deg |
 struct node_t *parse_term  (struct lexer_state *pstate)
 {
     struct node_t *lhs  = NULL;
     struct node_t *rhs  = NULL;
     struct node_t *term = NULL;
     struct node_t *temp = NULL;
-    lhs = parse_factor (pstate);
+    lhs = parse_deg (pstate);
     term = lhs;
 
-    while (pstate->cur < pstate->lexarr.size && current(pstate).kind == OP && (is_mul_div (pstate) || is_deg (pstate)))
+    while (pstate->cur < pstate->lexarr.size && is_mul_div (pstate))
     {
         temp = calloc (1, sizeof (struct node_t));
         temp->data.kind   = OP;
-        if (is_div (pstate))
-            temp->data.lex.op = DIV;
-        else if (is_mul (pstate))
+        temp->data.lex.op = DIV;
+        if (is_mul (pstate))
             temp->data.lex.op = MUL;
-        else //deg
-            temp->data.lex.op = DEG;
         pstate->cur += 1;
 
-        rhs = parse_factor (pstate);
+        rhs = parse_deg (pstate);
         #if 1
         if (rhs == NULL)
             return NULL;
@@ -228,6 +225,35 @@ struct node_t *parse_term  (struct lexer_state *pstate)
 
     return term;
 }
+
+// deg ::= factor ^ factor | factor
+struct node_t *parse_deg (struct lexer_state *pstate)
+{
+    struct node_t *deg  = NULL;
+    struct node_t *lhs  = NULL;
+    struct node_t *rhs  = NULL;
+    struct node_t *temp = NULL;
+
+    lhs = parse_factor (pstate);
+    deg = lhs;
+
+    while (pstate->cur < pstate->lexarr.size && is_deg (pstate))
+    {
+        temp = calloc (1, sizeof (struct node_t));
+        temp->data.kind   = OP;
+        temp->data.lex.op = DEG;
+        pstate->cur += 1;
+
+        rhs = parse_factor (pstate);
+        if (rhs == NULL)
+            return NULL;
+        temp->left = deg;
+        temp->right = rhs;
+        deg = temp;
+    }
+    return deg;
+}
+
 
 // factor ::= ( expr ) | number | {sin(expr), cos(expr), ln (expr), exp (expr)}
 struct node_t *parse_factor (struct lexer_state *pstate)
