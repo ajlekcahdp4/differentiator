@@ -5,4 +5,4 @@
     - exp()
     - ln ()
 - write parser
-    - Change deg priority
+    - Change deg priority ( done 12.04 )
