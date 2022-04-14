@@ -9,7 +9,7 @@ enum braces_t { LBRAC, RBRAC };
 
 struct lexem_t {
     enum lexem_kind_t kind;
-    union {
+    union lexem_val{
         char *name;
         enum  operation_t op;
         enum  braces_t b;

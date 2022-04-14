@@ -5,12 +5,14 @@
 
 #include "lexer/lexer.h"
 #include "parser/parser.h"
+#include "derivatives/derivatives.h"
 
 int main ()
 {
     char *buf = 0;
     struct lex_array_t *lex = 0;
     struct node_t *top = NULL;
+    struct node_t *top2 = NULL;
 
     Input (&buf);
     
@@ -23,7 +25,9 @@ int main ()
     top = build_syntax_tree (*lex);
     if (top == NULL)
         return 0;
-    
     tree_dump (top);
+    top2 = Derivate (top);
+    tree_dump (top2);
+
     return 0;
 }
