@@ -1,5 +1,5 @@
 CC = gcc
-CFLGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra
 DEBUG = -g
 SRC_PATH = sources/
 TEMP_P = temps/
