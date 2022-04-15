@@ -17,7 +17,7 @@ int main ()
     Input (&buf);
     
     lex = lex_string (buf);
-    if (lex->size < 0)
+    if (lex == NULL || lex->size < 0)
     {
         End (buf, lex);
         return 1;
@@ -28,6 +28,6 @@ int main ()
     tree_dump (top);
     top2 = Derivate (top);
     tree_dump (top2);
-
+    End (buf, lex);
     return 0;
 }

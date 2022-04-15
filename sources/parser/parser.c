@@ -280,7 +280,7 @@ struct node_t *parse_factor (struct lexer_state *pstate)
         pstate->cur += 1;   
         return expr;
     }
-    if (is_number (pstate) || is_var (pstate))//div to 2 ways
+    if (is_number (pstate) || is_var (pstate))
     {
         if (is_number (pstate))
         {
@@ -348,6 +348,9 @@ struct node_t *parse_factor (struct lexer_state *pstate)
     return NULL;
 }
 
+
+
+
 struct node_t *build_syntax_tree(struct lex_array_t lexarr)
 {
     int cur = 0;
@@ -357,7 +360,7 @@ struct node_t *build_syntax_tree(struct lex_array_t lexarr)
     res = parse_expr (&ls);
     if (ls.cur != ls.lexarr.size && res != 0)
     {
-        printf ("ERROR: error while building syntax tree\n");
+        fprintf (stderr, "ERROR: error while building syntax tree\n");
         return 0;
     }
     return res;

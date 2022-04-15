@@ -53,7 +53,7 @@ void DtSetNode (FILE* dotfile, struct node_t *node)
             }
             break;
         case NUM:
-            fprintf (dotfile, "%d", node->data.lex.num);
+            fprintf (dotfile, "%g", node->data.lex.num);
             break;
         case VAR:
             fprintf (dotfile, "%s", node->data.lex.name);

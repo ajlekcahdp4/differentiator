@@ -36,7 +36,7 @@ int is_const (struct node_t *top)
 }
 
 
-struct node_t *NewNum (int val)
+struct node_t *NewNum (double val)
 {
     struct node_t *newnode = calloc (1, sizeof(struct node_t));
     newnode->data.kind = NUM;

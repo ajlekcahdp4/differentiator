@@ -3,17 +3,32 @@
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "lexer.h"
 
 
-int number_input (const char *buf, int *i)
+double number_input (const char *buf, int *i)
 {
-    int val = 0;
+    double val = 0;
+    double weight = 1;
+
+
     while (isdigit (buf[*i]))
     {
         val = val * 10 + buf[*i] - '0';
         *i += 1;
+    }
+
+    if (buf[*i] == '.')
+    {
+        *i += 1;
+        while (isdigit (buf[*i]))
+        {
+            weight /= 10;
+            val += (buf[*i] - '0') * weight;
+            *i += 1;
+        }
     }
     return val;
 }
@@ -39,6 +54,13 @@ char *ReadVar (const char *buf, int i)
     char *str = calloc (MAX_VAR_LEN, sizeof(char));
     assert (str);
     char c = buf[i];
+
+    if (!isalpha(c))
+    {
+        fprintf (stderr, "ERROR: wrong usage of \'%c\' token\n", c);
+        free (str);
+        return NULL;
+    }
     while (isalpha(c))
     {
         str[j] = c;
@@ -71,10 +93,14 @@ int Input (char **buf)
     return len;
 }
 
+
 void End (char *buf, struct lex_array_t *lex)
 {
+    if (lex)
+    {
     free (lex->lexems);
     free (lex);
+    }
     free (buf);
 }
 
@@ -136,7 +162,7 @@ void print_lex (struct lex_array_t *lex)
             }
             break;
         case NUM:
-            printf ("NUMBER:%d ", lex->lexems[i].lex.num);
+            printf ("NUMBER:%g ", lex->lexems[i].lex.num);
             break;
         case VAR:
             printf ("VAR:%s ", lex->lexems[i].lex.name);
@@ -241,6 +267,8 @@ int lex_insert (struct lex_array_t *lex, const char *buf, int i, int ip)
         lex->size += 1;
         lex->lexems[ip].kind = VAR;
         lex->lexems[ip].lex.name = ReadVar (buf, i);
+        if (lex->lexems[ip].lex.name == NULL)
+            return -1;
         i += strlen(lex->lexems[ip].lex.name) - 1;
     }
     return i + 1;
@@ -255,16 +283,49 @@ struct lex_array_t *lex_resize (struct lex_array_t *lex)
     return lex;
 }
 
+struct lex_array_t *lex_asurence (struct lex_array_t *lex)
+{
+    struct lex_array_t *new_lex = calloc (1, sizeof (struct lex_array_t));
+    new_lex->capacity = lex->capacity;
+    new_lex->lexems = calloc (new_lex->capacity, sizeof (struct lexem_t));
+
+    int j = 0;
+    for (int i = 0; i < lex->size; i++)
+    {
+        if (new_lex->size == new_lex->capacity)
+            lex_resize (new_lex);
+
+        new_lex->lexems[j].kind = lex->lexems[i].kind;
+        new_lex->lexems[j].lex  = lex->lexems[i].lex;
+
+        if ((i < lex->size - 1 ) && (lex->lexems[i].kind == NUM) && (lex->lexems[i + 1].kind == VAR))
+        {
+            j++;
+            new_lex->lexems[j].kind = OP;
+            new_lex->lexems[j].lex.op = MUL;
+            new_lex->size += 1;
+        }
+        j++;
+        new_lex->size += 1;
+    }
+
+    free (lex->lexems);
+    free (lex);
+    
+    return new_lex;
+}
+
+
 #define START_CAPACITY 16
 struct lex_array_t *lex_string (const char *buf)
 {
     int ip = 0;
     int size = 0;
     struct lex_array_t *lex = calloc (1, sizeof (struct lex_array_t));
-    lex->lexems   = calloc (16, sizeof (struct lexem_t));
+    lex->lexems   = calloc (START_CAPACITY, sizeof (struct lexem_t));
     assert (lex);
     assert (lex->lexems);
-    lex->capacity = 16;
+    lex->capacity = START_CAPACITY;
     size = 0;
     ip = 0;
     for (int i = 0; buf[i] != '\0' && buf[i] != EOF && buf[i] != '\n'; )
@@ -274,14 +335,17 @@ struct lex_array_t *lex_string (const char *buf)
         i = lex_insert (lex, buf, i, ip);
         if (i == -1)
         {
-            printf ("ERROR: unknown error\n");
-            size = -2;
-            break;
+            free (lex->lexems);
+            free (lex);
+            return NULL;
         }
         size += 1;
         ip += 1;
     }
     lex->size = size;
+
+    lex = lex_asurence(lex);
+
     return lex;
 }
 #undef START_CAPACITY

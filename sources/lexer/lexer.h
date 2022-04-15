@@ -11,9 +11,9 @@ struct lexem_t {
     enum lexem_kind_t kind;
     union lexem_val{
         char *name;
+        double num;
         enum  operation_t op;
         enum  braces_t b;
-        int   num;
     } lex;
 };
 
@@ -23,7 +23,7 @@ struct lex_array_t {
     int capacity;
 };
 
-int number_input (const char *buf, int *i);
+
 void print_lex (struct lex_array_t *lex);
 int skip_spaces (const char* buf, int ip);
 int Input (char **buf);
