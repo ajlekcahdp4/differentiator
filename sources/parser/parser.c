@@ -366,30 +366,6 @@ struct node_t *build_syntax_tree(struct lex_array_t lexarr)
     return res;
 }
 
-int calc_result(struct node_t *top) //inorder calculation
-{
-    struct node_t *cur = top;
-    int val_l = 0;
-    int val_r = 0;
-
-    if (cur->left)
-        val_l = calc_result (cur->left);
-    if (cur->right)
-        val_r = calc_result (cur->right);
-
-    if (top->data.kind == OP)
-    {
-        if (top->data.lex.op == ADD)
-            return val_l + val_r;
-        else if (top->data.lex.op == SUB)
-            return val_l - val_r;
-        else if (top->data.lex.op == MUL)
-            return val_l * val_r;
-        else if (top->data.lex.op == DIV)
-            return val_l / val_r;
-    }
-    return top->data.lex.num;
-}
 
 void tree_dump (struct node_t *top)
 {

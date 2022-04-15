@@ -94,12 +94,18 @@ int Input (char **buf)
 }
 
 
+
 void End (char *buf, struct lex_array_t *lex)
 {
     if (lex)
     {
-    free (lex->lexems);
-    free (lex);
+        for (int i = 0; i < lex->size; i++)
+        {
+            if (lex->lexems[i].kind == VAR)
+                free (lex->lexems[i].lex.name);
+        }
+        free (lex->lexems);
+        free (lex);
     }
     free (buf);
 }

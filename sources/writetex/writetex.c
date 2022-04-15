@@ -88,7 +88,9 @@ int PrintDerivate (FILE *f, struct node_t *top)
             fprintf (f, "} ");
             return 0;
         case DEG:
+            fprintf (f, "\\left( ");
             PrintDerivate (f, top->left);
+            fprintf (f, "\\right) ");
             fprintf (f, "^{ ");
             PrintDerivate (f, top->right);
             fprintf (f, "} ");

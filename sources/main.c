@@ -7,6 +7,21 @@
 #include "parser/parser.h"
 #include "derivatives/derivatives.h"
 #include "writetex/writetex.h"
+#include "optimization/optimization.h"
+
+
+int DeleteTree (struct node_t *top)
+{
+    if (top == NULL)
+        return 0;
+    if (top->left)
+        DeleteTree (top->left);
+    if (top->right)
+        DeleteTree (top->right);
+    free (top);
+    return 0;
+}
+
 
 int main ()
 {
@@ -33,13 +48,20 @@ int main ()
     char *filename = calloc (128, sizeof(char));
     scanf ("%s", filename);
     FILE *f = fopen (filename, "w");
+    free (filename);
     PrintStart (f);
     top2 = Derivate (top);
+    DeleteTree (top);
     DumpDerivate (f, top2);
     tree_dump (top2);
+
+    Optimize (f, top2);
+
+    //tree_dump (top2);
     PrintEnd (f);
     fclose (f);
     //========End===========
+    DeleteTree(top2);
     End (buf, lex);
     return 0;
 }

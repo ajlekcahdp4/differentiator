@@ -4,8 +4,15 @@ DEBUG = -g
 SRC_PATH = sources/
 TEMP_P = temps/
 
-all: CONFIG_T MAIN_T LEXER_T PARSER_T DUMP_T DERIVATE_T WRITETEX_T
-	$(CC) $(CFLAGS) $(DEBUG) $(TEMP_P)main.o $(TEMP_P)lexer.o $(TEMP_P)parser.o $(TEMP_P)dump_tree.o $(TEMP_P)derivatives.o $(TEMP_P)writetex.o -o differentiate
+all: CONFIG_T MAIN_T LEXER_T PARSER_T DUMP_T DERIVATE_T WRITETEX_T OPTIMIZATION_T
+	$(CC) $(CFLAGS) $(DEBUG) 	$(TEMP_P)main.o \
+								$(TEMP_P)lexer.o \
+								$(TEMP_P)parser.o \
+								$(TEMP_P)dump_tree.o \
+								$(TEMP_P)derivatives.o \
+								$(TEMP_P)writetex.o \
+								$(TEMP_P)optimization.o \
+								-o differentiate -lm
 	rm -rf temps
 CONFIG_T:
 	chmod +x $(SRC_PATH)scripts/mkdir.sh
@@ -22,5 +29,7 @@ DERIVATE_T:
 	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)derivatives/derivatives.c -o $(TEMP_P)derivatives.o
 WRITETEX_T:
 	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)writetex/writetex.c -o $(TEMP_P)writetex.o
+OPTIMIZATION_T:
+	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)optimization/optimization.c -o $(TEMP_P)optimization.o
 clean:
-	rm -rf *.out *.o *.dat *.res
+	rm -rf *.dat *.png *.dot *.o *.out vgcore.* .vscode differentiate *.aux *.pdf *.log *.synctex.gz *.fls *.fdb_latexmk
