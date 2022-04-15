@@ -8,3 +8,10 @@
 vgcore.*
 .vscode
 differentiate
+*.aux
+*.pdf
+*.tex
+*.log
+*.synctex.gz
+*.fls
+*.fdb_latexmk

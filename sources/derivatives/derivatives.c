@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "derivatives.h"
+#include "../writetex/writetex.h"
 
 struct node_t *SubTreeCpy (struct node_t *src)
 {
@@ -189,5 +190,6 @@ struct node_t *Derivate (struct node_t *top)
         fprintf (stderr, "ERROR: unexpected operator in differentiating\n");
         return NULL;
     }
+    
     return NULL;
 }
