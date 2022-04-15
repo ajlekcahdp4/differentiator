@@ -16,112 +16,171 @@ struct node_t *SubTreeCpy (struct node_t *src)
     return dest;
 }
 
-struct node_t *NewNode (enum lexem_kind_t kind, union lexem_val lex, struct node_t *left, struct node_t *right)
+int is_const (struct node_t *top)
+{
+    if (top == NULL)
+        return 1;
+    int res = 1;
+    if (top->data.kind == OP)
+    {
+        res = is_const (top->left);
+        if (res == 0)
+            return 0;
+        res = is_const(top->right);
+        if (res == 0)
+            return 0;
+    }
+    else if (top->data.kind == VAR)
+        return 0;
+    return 1;
+}
+
+
+struct node_t *NewNum (int val)
 {
     struct node_t *newnode = calloc (1, sizeof(struct node_t));
-    newnode->data.kind = kind;
-    newnode->data.lex  = lex;
-    newnode->left = left;
-    newnode->right = right;
+    newnode->data.kind = NUM;
+    newnode->data.lex.num  = val;
     return newnode;
 }
 
-struct node_t * Add (struct node_t *left, struct node_t *right)
+struct node_t *NewOp (enum operation_t op)
 {
-    struct node_t *newnode = calloc (1, sizeof(struct node_t));
-    newnode->data.kind   = OP;
-    newnode->data.lex.op = ADD;
-    newnode->left  = left;
-    newnode->right = right;
+    struct node_t *newnode = calloc (1, sizeof (struct node_t));
+    newnode->data.kind = OP;
+    newnode->data.lex.op = op;
     return newnode;
 }
 
-struct node_t * Sub (struct node_t *left, struct node_t *right)
-{
-    struct node_t *newnode = calloc (1, sizeof(struct node_t));
-    newnode->data.kind   = OP;
-    newnode->data.lex.op = SUB;
-    newnode->left  = left;
-    newnode->right = right;
-    return newnode;
-}
 
 struct node_t *Derivate (struct node_t *top)
 {
-    union lexem_val lex;
-    struct node_t *left  = NULL;
-    struct node_t *right = NULL;
-    struct node_t *temp1 = NULL;
-    struct node_t *temp2 = NULL;
+    struct node_t *node = NULL;
 
     switch (top->data.kind)
     {
     case NUM:
-        lex.num = 0;
-        return NewNode (NUM, lex, NULL, NULL);
+        node = NewNum (0);
+        return node;
     case VAR:
-        lex.num = 1;
-        return NewNode (NUM, lex, NULL, NULL);
+        node = NewNum (1);
+        return node;
     case OP:
         switch (top->data.lex.op)
         {
         case ADD:
-            lex.op = ADD;
-            return NewNode (OP, lex, Derivate (top->left), Derivate (top->right));
+            node = NewOp (ADD);
+            node->left  = Derivate (top->left);
+            node->right = Derivate (top->right);
+            return node;
         case SUB:
-            lex.op = SUB;
-            return NewNode (OP, lex, Derivate (top->left), Derivate (top->right));
+            node = NewOp (SUB);
+            node->left  = Derivate (top->left);
+            node->right = Derivate (top->right);
+            return node;
         case MUL:
-            lex.op = MUL;
-            temp1  = SubTreeCpy (top->right);
-            left   = NewNode    (OP, lex, Derivate(top->left), temp1);
-            temp1  = SubTreeCpy (top->left);
-            right  = NewNode    (OP, lex, temp1, Derivate (top->right));
-            return   Add (left, right);
-        case DIV:
-            lex.op = MUL;
-            temp1  = SubTreeCpy (top->left);
-            right  = NewNode (OP, lex, temp1, Derivate (top->right));
-            temp1  = SubTreeCpy (top->right);
-            left   = NewNode (OP, lex, Derivate (top->left), temp1);
+            node = NewOp (ADD);
             
-            lex.num = 2;
-            temp2   = NewNode (NUM, lex, NULL, NULL);
-            lex.op  = DEG;
-            temp1   = SubTreeCpy (top->right);
-            temp2   = NewNode (OP, lex, temp1, temp2);
+            node->left  = NewOp (MUL);
+            node->right = NewOp (MUL);
 
-            temp1   = Sub (left, right);
-            lex.op  = DIV;
-            return NewNode (OP, lex, temp1, temp2);
+            node->left->left   = Derivate   (top->left);
+            node->left->right  = SubTreeCpy (top->right);
+            
+            node->right->left  = SubTreeCpy (top->left);
+            node->right->right = Derivate   (top->right);
+            
+            return node;
+        case DIV:
+            node = NewOp (DIV);
+            
+            node->left  = NewOp (SUB);
+            node->right = NewOp (DEG);
+
+            node->left->left  = NewOp (MUL);
+            node->left->right = NewOp (MUL);
+
+            node->right->left  = SubTreeCpy (top->right);
+            node->right->right = NewNum (2);
+
+            node->left->left->left   = Derivate   (top->left);
+            node->left->left->right  = SubTreeCpy (top->right);
+
+            node->left->right->left  = SubTreeCpy (top->left);
+            node->left->right->right = Derivate   (top->right);
+
+            return node;
         case SIN:
-            lex.op = COS;
-            temp1  = SubTreeCpy (top->left);
-            temp1  = NewNode (OP, lex, temp1, NULL);
-            lex.op = MUL;
-            return NewNode (OP, lex, temp1, Derivate (top->left));
+            node = NewOp (MUL);
+
+            node->left  = NewOp (COS);
+            node->right = Derivate (top->left);
+            
+            node->left->left = SubTreeCpy (top->left);
+            
+            return node;
         case COS:
-            lex.op  = SIN;
-            temp1   = SubTreeCpy (top->left);
-            temp1   = NewNode (OP, lex, temp1, NULL);
-            lex.num = 0;
-            temp2   = NewNode (NUM, lex, NULL, NULL);
-            lex.op  = SUB;
-            temp1   = NewNode (OP, lex, temp2, temp1);
-            lex.op  = MUL;
-            return    NewNode (OP, lex, temp1, Derivate (top->left));
+            node = NewOp (SUB);
+
+            node->left  = NewNum (0);
+            node->right = NewOp  (MUL);
+            
+            node->right->left  = NewOp (SIN);
+            node->right->right = Derivate (top->left);
+
+            node->right->left->left = SubTreeCpy (top->left);
+            
+            return node;
         case LOG:
-            lex.op = LOG;
-            temp1 = SubTreeCpy (top->left);
-            temp2 = Derivate (top->left);
-            lex.op = DIV;
-            return NewNode (OP, lex, temp2, temp1);
+            node = NewOp (DIV);
+
+            node->left  = Derivate (top->left);
+            node->right = SubTreeCpy (top->left);
+            
+            return node;
         case EXP:
-            lex.op = EXP;
-            temp1 = SubTreeCpy (top->left);
-            temp1 = NewNode (OP, lex, temp1, NULL);
-            lex.op = MUL;
-            return (OP, lex, temp1, Derivate (top->left));
+            node = NewOp (MUL);
+            
+            node->left  = SubTreeCpy (top);
+            node->right = Derivate   (top->left);
+
+            return node;
+        case DEG:
+            if (is_const(top->right))
+            {
+                if (is_const(top->left))
+                {
+                    return NewNum (0);
+                }
+
+                node = NewOp (MUL);
+
+                node->right = SubTreeCpy (top->right);
+                node->left  = NewOp (MUL);
+
+                node->left->right = Derivate (top->left);
+                node->left->left  = NewOp (DEG);
+
+                node->left->left->left  = SubTreeCpy (top->left);
+                node->left->left->right = NewOp (SUB);
+
+                node->left->left->right->left  = SubTreeCpy (top->right);
+                node->left->left->right->right = NewNum (1);
+            }
+            else
+            {
+                node = NewOp (MUL);
+
+                node->left = NewOp (EXP);
+
+                node->left->left = NewOp (MUL);
+                node->left->left->left  = SubTreeCpy (top->right);
+                node->left->left->right = NewOp (LOG);
+                node->left->left->right->left = SubTreeCpy (top->left); 
+
+                node->right = Derivate (node->left->left);
+            }
+            return node;
         default:
             fprintf (stderr, "ERROR: unexpected operator in differentiating\n");
             return NULL;
