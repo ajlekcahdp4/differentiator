@@ -8,19 +8,10 @@
 #include "derivatives/derivatives.h"
 #include "writetex/writetex.h"
 #include "optimization/optimization.h"
+#include "tree/tree.h"
 
 
-int DeleteTree (struct node_t *top)
-{
-    if (top == NULL)
-        return 0;
-    if (top->left)
-        DeleteTree (top->left);
-    if (top->right)
-        DeleteTree (top->right);
-    free (top);
-    return 0;
-}
+
 
 
 int main ()
@@ -54,7 +45,7 @@ int main ()
     DeleteTree (top);
     tree_dump (top2);
 
-    Optimize (f, top2);
+    top2 = Optimize (f, top2);
 
     tree_dump (top2);
     DumpDerivate (f, top2);

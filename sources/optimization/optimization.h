@@ -3,7 +3,7 @@
 
 #include "../parser/parser.h"
 
-void Optimize (FILE *f, struct node_t *top);
+struct node_t *Optimize (FILE *f, struct node_t *top);
 
 
 

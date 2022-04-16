@@ -4,7 +4,7 @@ DEBUG = -g
 SRC_PATH = sources/
 TEMP_P = temps/
 
-all: CONFIG_T MAIN_T LEXER_T PARSER_T DUMP_T DERIVATE_T WRITETEX_T OPTIMIZATION_T
+all: CONFIG_T MAIN_T LEXER_T PARSER_T DUMP_T DERIVATE_T WRITETEX_T OPTIMIZATION_T TREE_T
 	$(CC) $(CFLAGS) $(DEBUG) 	$(TEMP_P)main.o \
 								$(TEMP_P)lexer.o \
 								$(TEMP_P)parser.o \
@@ -12,6 +12,7 @@ all: CONFIG_T MAIN_T LEXER_T PARSER_T DUMP_T DERIVATE_T WRITETEX_T OPTIMIZATION_
 								$(TEMP_P)derivatives.o \
 								$(TEMP_P)writetex.o \
 								$(TEMP_P)optimization.o \
+								$(TEMP_P)tree.o 		\
 								-o differentiate -lm
 	rm -rf temps
 CONFIG_T:
@@ -31,5 +32,7 @@ WRITETEX_T:
 	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)writetex/writetex.c -o $(TEMP_P)writetex.o
 OPTIMIZATION_T:
 	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)optimization/optimization.c -o $(TEMP_P)optimization.o
+TREE_T:
+	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)tree/tree.c -o $(TEMP_P)tree.o
 clean:
 	rm -rf *.dat *.png *.dot *.o *.out vgcore.* .vscode differentiate *.aux *.pdf *.log *.synctex.gz *.fls *.fdb_latexmk
