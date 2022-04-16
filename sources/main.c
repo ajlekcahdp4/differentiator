@@ -52,12 +52,12 @@ int main ()
     PrintStart (f);
     top2 = Derivate (top);
     DeleteTree (top);
-    DumpDerivate (f, top2);
     tree_dump (top2);
 
     Optimize (f, top2);
 
-    //tree_dump (top2);
+    tree_dump (top2);
+    DumpDerivate (f, top2);
     PrintEnd (f);
     fclose (f);
     //========End===========
