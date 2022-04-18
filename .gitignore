@@ -15,3 +15,5 @@ differentiate
 *.synctex.gz
 *.fls
 *.fdb_latexmk
+*.d
+build/

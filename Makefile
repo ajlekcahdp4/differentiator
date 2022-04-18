@@ -24,7 +24,7 @@ SUBS := $(CSRCS)
 SUBS := $(subst $(SRCDIR), $(BUILDDIR), $(SUBS))
 
 OBJS  = $(SUBS:.c=.o)
-DEPS = $(SUBS.c=.d)
+DEPS = $(SUBS:.c=.d)
 
 all: $(OBJS)
 	$(CC) $(CFLAGS) $^ -o differentiate -lm
@@ -38,6 +38,7 @@ $(BUILDDIR)%.d: $(SRCDIR)%.c
 	@echo "Collecting deps for $< ..."
 	@mkdir -p $(dir $@)
 	@$(CC) -E $(CFLAGS) $< -MM -MT $(@:.d=.o) > $@
+
 
 include $(DEPS)
 
