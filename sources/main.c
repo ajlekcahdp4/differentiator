@@ -48,7 +48,6 @@ int main ()
     top2 = Optimize (f, top2);
 
     tree_dump (top2);
-    DumpDerivate (f, top2);
     PrintEnd (f);
     fclose (f);
     //========End===========

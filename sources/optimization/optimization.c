@@ -23,7 +23,7 @@ int is_zero (struct node_t *node);
 
 unsigned long long HashNode (struct node_t *top)
 {
-    unsigned long long hash = (unsigned long long)(top->data.lex.num * top->data.lex.num);
+    unsigned long long hash = (unsigned long long)((top->data.lex.num * top->data.lex.num) / (top->data.lex.num * 1e-5));
     return hash;
 }
 
@@ -49,21 +49,16 @@ struct node_t *Optimize (FILE *f, struct node_t *top)
 
     while (oldhash != newhash)
     {
+        DumpDerivate (f, top);
         oldhash = HashTree (top);
-        DumpDerivate (f, top);
         MergeConstants (top);
-        DumpDerivate (f, top);
         MulZero (top);
         tree_dump (top);
-        DumpDerivate (f, top);
         top = MulOne (top);
-        DumpDerivate (f, top);
         top = PlusZero (top);
-        DumpDerivate (f, top);
 
         newhash = HashTree (top);
     }
-    //DumpDerivate (f, top);
     return top;
 }
 

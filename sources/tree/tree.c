@@ -12,3 +12,14 @@ int DeleteTree (struct node_t *top)
     free (top);
     return 0;
 }
+
+
+int TreeDepth (struct node_t *top)
+{
+    int depth = 1;
+    if (top->left)
+        depth += TreeDepth (top->left);
+    if (top->right)
+        depth += TreeDepth (top->right);
+    return depth;
+}

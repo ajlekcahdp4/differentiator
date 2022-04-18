@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "writetex.h"
+#include "../tree/tree.h"
 
 int PrintDerivate (FILE *f, struct node_t *top);
 
@@ -26,6 +27,26 @@ void DumpDerivate (FILE *f, struct node_t *top)
 }
 
 
+int NeedBraces (struct node_t *top)
+{
+    if (TreeDepth (top) == 1)
+        return 0;
+    if (top->data.lex.op == MUL)
+        return 0;
+    if (top->data.lex.op == DEG)
+        return 0;
+    if (top->data.lex.op == SIN)
+        return 0;
+    if (top->data.lex.op == COS)
+        return 0;
+    if (top->data.lex.op == LOG)
+        return 0;
+    if (top->data.lex.op == EXP)
+        return 0;
+    return 1;
+}
+
+
 int PrintDerivate (FILE *f, struct node_t *top)
 {
     if (top == NULL)
@@ -44,11 +65,25 @@ int PrintDerivate (FILE *f, struct node_t *top)
         switch (top->data.lex.op)
         {
         case MUL:
-            fprintf (f, "\\left( ");
-            PrintDerivate (f, top->left);
-            fprintf (f, "\\right) \\cdot \\left( ");
-            PrintDerivate (f, top->right);
-            fprintf (f, "\\right) ");
+            if (NeedBraces (top->left))
+            {
+                fprintf (f, "\\left( ");
+                PrintDerivate (f, top->left);
+                fprintf (f, "\\right) ");
+            }
+            else
+                PrintDerivate (f, top->left);
+
+            fprintf (f, "\\cdot ");
+
+            if (NeedBraces (top->right))
+            {
+                fprintf (f, "\\left( ");
+                PrintDerivate (f, top->right);
+                fprintf (f, "\\right) ");
+            }
+            else
+                PrintDerivate (f, top->right);
             return 0;
         case DIV:
             fprintf (f, "\\frac{ ");
@@ -68,19 +103,38 @@ int PrintDerivate (FILE *f, struct node_t *top)
             PrintDerivate (f, top->right);
             return 0;
         case SIN:
-            fprintf (f, "\\sin\\left( ");
-            PrintDerivate (f, top->left);
-            fprintf (f, "\\right) ");
+            fprintf (f, "\\sin");
+            if (NeedBraces (top->left))
+            {
+                fprintf (f, "\\left( ");
+                PrintDerivate (f, top->left);
+                fprintf (f, "\\right) ");
+            }
+            else
+                PrintDerivate (f, top->left);
             return 0;
         case COS:
-            fprintf (f, "\\cos\\left( ");
-            PrintDerivate (f, top->left);
-            fprintf (f, "\\right) ");
+            fprintf (f, "\\cos");
+            if (NeedBraces (top->left))
+            {
+                fprintf (f, "\\left( ");
+                PrintDerivate (f, top->left);
+                fprintf (f, "\\right) ");
+            }
+            else
+                PrintDerivate (f, top->left);
+            return 0;
             return 0;
         case LOG:
-            fprintf (f, "\\ln\\left( ");
-            PrintDerivate (f, top->left);
-            fprintf (f, "\\right) ");
+            fprintf (f, "\\ln");
+            if (NeedBraces (top->left))
+            {
+                fprintf (f, "\\left( ");
+                PrintDerivate (f, top->left);
+                fprintf (f, "\\right) ");
+            }
+            else
+                PrintDerivate (f, top->left);
             return 0;
         case EXP:
             fprintf (f, "e^{ ");
@@ -88,9 +142,14 @@ int PrintDerivate (FILE *f, struct node_t *top)
             fprintf (f, "} ");
             return 0;
         case DEG:
-            fprintf (f, "\\left( ");
-            PrintDerivate (f, top->left);
-            fprintf (f, "\\right) ");
+            if (NeedBraces (top->left))
+            {
+                fprintf (f, "\\left( ");
+                PrintDerivate (f, top->left);
+                fprintf (f, "\\right) ");
+            }
+            else
+                PrintDerivate (f, top->left);
             fprintf (f, "^{ ");
             PrintDerivate (f, top->right);
             fprintf (f, "} ");
