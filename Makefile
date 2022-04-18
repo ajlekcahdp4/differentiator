@@ -1,38 +1,47 @@
-CC = gcc
-CFLAGS = -Wall -Werror -Wextra
-DEBUG = -g
-SRC_PATH = sources/
-TEMP_P = temps/
+# new Makefile
+CC= gcc
 
-all: CONFIG_T MAIN_T LEXER_T PARSER_T DUMP_T DERIVATE_T WRITETEX_T OPTIMIZATION_T TREE_T
-	$(CC) $(CFLAGS) $(DEBUG) 	$(TEMP_P)main.o \
-								$(TEMP_P)lexer.o \
-								$(TEMP_P)parser.o \
-								$(TEMP_P)dump_tree.o \
-								$(TEMP_P)derivatives.o \
-								$(TEMP_P)writetex.o \
-								$(TEMP_P)optimization.o \
-								$(TEMP_P)tree.o 		\
-								-o differentiate -lm
-	rm -rf temps
-CONFIG_T:
-	chmod +x $(SRC_PATH)scripts/mkdir.sh
-	./$(SRC_PATH)scripts/mkdir.sh temps
-MAIN_T:
-	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)main.c -o $(TEMP_P)main.o
-LEXER_T:
-	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)lexer/lexer.c -o $(TEMP_P)lexer.o
-PARSER_T:
-	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)parser/parser.c -o $(TEMP_P)parser.o
-DUMP_T:
-	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)dump_tree/dump_tree.c -o $(TEMP_P)dump_tree.o
-DERIVATE_T:
-	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)derivatives/derivatives.c -o $(TEMP_P)derivatives.o
-WRITETEX_T:
-	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)writetex/writetex.c -o $(TEMP_P)writetex.o
-OPTIMIZATION_T:
-	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)optimization/optimization.c -o $(TEMP_P)optimization.o
-TREE_T:
-	$(CC) $(CFLAGS) -c $(DEBUG) $(SRC_PATH)tree/tree.c -o $(TEMP_P)tree.o
+CFLAGS ?= -Wall -Werror -Wextra -O3
+
+DEBUG = -g
+
+CFLAGS += $(DEBUG)
+
+SRCDIR = ./sources/
+BUILDDIR =./build/
+
+CSRCS = $(SRCDIR)main.c		   				 \
+		$(SRCDIR)lexer/lexer.c  			 \
+		$(SRCDIR)parser/parser.c			 \
+		$(SRCDIR)derivatives/derivatives.c	 \
+		$(SRCDIR)optimization/optimization.c \
+		$(SRCDIR)writetex/writetex.c		 \
+		$(SRCDIR)dump_tree/dump_tree.c		 \
+		$(SRCDIR)tree/tree.c
+
+
+SUBS := $(CSRCS)
+SUBS := $(subst $(SRCDIR), $(BUILDDIR), $(SUBS))
+
+OBJS  = $(SUBS:.c=.o)
+DEPS = $(SUBS.c=.d)
+
+all: $(OBJS)
+	$(CC) $(CFLAGS) $^ -o differentiate -lm
+
+$(BUILDDIR)%.o: $(SRCDIR)%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $< -c -o $@
+
+
+$(BUILDDIR)%.d: $(SRCDIR)%.c
+	@echo "Collecting deps for $< ..."
+	@mkdir -p $(dir $@)
+	@$(CC) -E $(CFLAGS) $< -MM -MT $(@:.d=.o) > $@
+
+include $(DEPS)
+
+
+.PHONY: clean
 clean:
-	rm -rf *.dat *.png *.dot *.o *.out vgcore.* .vscode differentiate *.aux *.pdf *.log *.synctex.gz *.fls *.fdb_latexmk
+	rm -rf $(OBJS) $(DEPS) *.aux *.fdb_latexmk *.fls *.log *.pdf *.tex *synctex.gz differentiate *.dot *.png

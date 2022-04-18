@@ -7,11 +7,20 @@
 
 int PrintDerivate (FILE *f, struct node_t *top);
 
+#if 0
+char* phrase[20] = {0};
+
+phrase[0] = "Несложно заметить, что:\n";
+phrase[1] = "Очевидно, что:\n";
+phrase[2] = "Читателю уже должно быть очевидно, что:\n";
+#endif
+
 void PrintStart (FILE* f)
 {   
     fprintf (f, "\\documentclass{article}\n\\usepackage[T2A]{fontenc}\n\\usepackage[utf8]{inputenc}\n\\usepackage[russian]{babel}\n");
     fprintf (f, "\\usepackage{graphicx}\n\\graphicspath{ {./images/} }\n");
     fprintf (f, "\\usepackage{wrapfig}\n\\usepackage{amsmath}\n");
+    fprintf (f, "\\usepackage[left = 3cm, right = 2cm, top = 2cm]{geometry}\n");
     fprintf (f, "\\title{Нахождение криволинейных производных в замкнутом множестве колец псевдодействительных чисел}\n");
     fprintf (f, "\\author{Александр Романов Б01-107}\n\n");
     fprintf (f, "\\begin{document}\n");
@@ -32,6 +41,8 @@ int NeedBraces (struct node_t *top)
     if (TreeDepth (top) == 1)
         return 0;
     if (top->data.lex.op == MUL)
+        return 0;
+    if (top->data.lex.op == DIV)
         return 0;
     if (top->data.lex.op == DEG)
         return 0;
@@ -126,7 +137,7 @@ int PrintDerivate (FILE *f, struct node_t *top)
             return 0;
             return 0;
         case LOG:
-            fprintf (f, "\\ln");
+            fprintf (f, "ln");
             if (NeedBraces (top->left))
             {
                 fprintf (f, "\\left( ");
