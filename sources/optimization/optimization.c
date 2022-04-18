@@ -10,6 +10,7 @@
 #include "../dump_tree/dump_tree.h"
 
 int MergeConstants (struct node_t *top);
+int MergeConstants2 (struct node_t *top);
 int MulZero (struct node_t *top);
 struct node_t *MulOne (struct node_t *top);
 struct node_t *PlusZero (struct node_t *top);
@@ -17,6 +18,7 @@ struct node_t *PlusZero (struct node_t *top);
 
 int is_one  (struct node_t *node);
 int is_zero (struct node_t *node);
+int is_consts_mergeable (struct node_t *top);
 
 
 //=====================================hash=functions========================================
@@ -56,7 +58,7 @@ struct node_t *Optimize (FILE *f, struct node_t *top)
         tree_dump (top);
         top = MulOne (top);
         top = PlusZero (top);
-
+        MergeConstants2 (top);
         newhash = HashTree (top);
     }
     return top;
@@ -233,6 +235,75 @@ int MergeConstants (struct node_t *top)
 }
 
 
+//=====================================Merge=constants=2=========================================
+
+int MergeConstants2 (struct node_t *top)
+{
+    struct node_t *temp = NULL;
+    if (top == NULL)
+        return 0;
+    if (top->left && top->left->left)
+        MergeConstants2 (top->left);
+    if (top->right && top->right->left)
+        MergeConstants2 (top->right);
+    if (top->data.kind != OP)
+    {
+        fprintf (stderr, "ERROR: no operation in optimization (merging constants)\n");
+        return -1;
+    }
+    if (top->data.lex.op == SIN || top->data.lex.op == COS || top->data.lex.op == EXP || top->data.lex.op == LOG || top->data.lex.op == DEG)
+        return 1;
+    if (top->left->data.kind == NUM)
+    {
+        if (top->right->data.kind != OP)
+            return 1;
+        if (top->right->data.lex.op == SIN || top->right->data.lex.op == COS || top->right->data.lex.op == EXP || top->right->data.lex.op == LOG || top->right->data.lex.op == DEG)
+            return 1;
+        switch (top->data.lex.op)
+        {
+        case MUL:
+            if (top->right->left->data.kind == NUM)
+            {
+                switch (top->right->data.lex.op)
+                {
+                case MUL:
+                    top->left->data.lex.num = top->left->data.lex.num * top->right->left->data.lex.op;
+                    free (top->right->left);
+                    temp = top->right;
+                    top->right = temp->right;
+                    free (temp);
+                    return 0;
+                default:
+                    return 1;
+                }
+            }
+            if (top->right->right->data.kind == NUM)
+            {
+                switch (top->right->data.lex.op)
+                {
+                case MUL:
+                    top->left->data.lex.num = top->left->data.lex.num * top->right->right->data.lex.num;
+                    free (top->right->right);
+                    temp = top->right;
+                    top->right = temp->left;
+                    free (temp);
+                    return 0;
+                default:
+                    return 1;
+                }
+            }
+            break;
+        default:
+            return 1;
+        }
+    }
+    if (top->right->data.kind == NUM)
+    {
+        ;
+    }
+    return 0;
+}
+
 //=======================================checking=============================================
 
 #define EPSILON ((double)1e-5)
@@ -254,5 +325,7 @@ int is_zero (struct node_t *node)
         return 0;
     return 1;
 }
+
+
 
 #undef EPSILON

@@ -10,4 +10,5 @@
 - Add float-point numbers ( done 15.04 )
 - Free Tree's
 - Add constants like pi, e 
-- Rewrite optimizations (MulOne and PlusZero)
+- Rewrite optimizations (MulOne and PlusZero)  ( done 16.04 )
+- write Merge constants 2 optimization 

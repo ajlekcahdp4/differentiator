@@ -115,7 +115,7 @@ int PrintDerivate (FILE *f, struct node_t *top)
             return 0;
         case SIN:
             fprintf (f, "\\sin");
-            if (NeedBraces (top->left))
+            if (TreeDepth (top->left) > 1)
             {
                 fprintf (f, "\\left( ");
                 PrintDerivate (f, top->left);
@@ -126,7 +126,7 @@ int PrintDerivate (FILE *f, struct node_t *top)
             return 0;
         case COS:
             fprintf (f, "\\cos");
-            if (NeedBraces (top->left))
+            if (TreeDepth (top->left) > 1)
             {
                 fprintf (f, "\\left( ");
                 PrintDerivate (f, top->left);
@@ -138,7 +138,7 @@ int PrintDerivate (FILE *f, struct node_t *top)
             return 0;
         case LOG:
             fprintf (f, "ln");
-            if (NeedBraces (top->left))
+            if (TreeDepth (top->left) > 1)
             {
                 fprintf (f, "\\left( ");
                 PrintDerivate (f, top->left);
@@ -153,7 +153,7 @@ int PrintDerivate (FILE *f, struct node_t *top)
             fprintf (f, "} ");
             return 0;
         case DEG:
-            if (NeedBraces (top->left))
+            if (TreeDepth (top->left) > 1)
             {
                 fprintf (f, "\\left( ");
                 PrintDerivate (f, top->left);
