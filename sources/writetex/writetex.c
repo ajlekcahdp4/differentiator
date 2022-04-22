@@ -15,7 +15,7 @@ phrase[1] = "Очевидно, что:\n";
 phrase[2] = "Читателю уже должно быть очевидно, что:\n";
 #endif
 
-void PrintStart (FILE* f)
+void PrintStart (FILE* f, struct node_t *top, size_t deg)
 {   
     fprintf (f, "\\documentclass{article}\n\\usepackage[T2A]{fontenc}\n\\usepackage[utf8]{inputenc}\n\\usepackage[russian]{babel}\n");
     fprintf (f, "\\usepackage{graphicx}\n\\graphicspath{ {./images/} }\n");
@@ -25,6 +25,10 @@ void PrintStart (FILE* f)
     fprintf (f, "\\author{Александр Романов Б01-107}\n\n");
     fprintf (f, "\\begin{document}\n");
     fprintf (f, "\\maketitle\n\n");
+    fprintf (f, "\\section{Введение}\n");
+    fprintf (f, "Цель этой работы заключается в рассмотрении весьма тривиальной задачи нахождения производной %lu степени от знакомой каждому функции:", deg);
+    DumpDerivate (f, top);
+    fprintf (f, "\\section {Работа:}\n\n");
 }
 
 
@@ -176,8 +180,10 @@ int PrintDerivate (FILE *f, struct node_t *top)
     }
 }
 
-void PrintEnd (FILE* f)
+void PrintEnd (FILE* f, struct node_t *top)
 {
     fprintf (f, "\\section{Краткие выводы:}\n\n");
+    fprintf (f, "Итак, как и ожидалось мы получили результат:\n");
+    DumpDerivate (f, top);
     fprintf (f, "\\end{document}");
 }

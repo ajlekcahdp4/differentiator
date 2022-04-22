@@ -55,7 +55,6 @@ struct node_t *Optimize (FILE *f, struct node_t *top)
         oldhash = HashTree (top);
         MergeConstants (top);
         MulZero (top);
-        tree_dump (top);
         top = MulOne (top);
         top = PlusZero (top);
         MergeConstants2 (top);
