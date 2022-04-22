@@ -1,7 +1,7 @@
 #ifndef PARSER_INCLUDED
 #define PARSER_INCLUDED
 
-#include "../lexer/lexer.h"
+#include "lexer.h"
 
 
 struct lexer_state {

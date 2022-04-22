@@ -4,10 +4,10 @@
 #include <math.h>
 
 #include "optimization.h"
-#include "../derivatives/derivatives.h"
-#include "../writetex/writetex.h"
-#include "../tree/tree.h"
-#include "../dump_tree/dump_tree.h"
+#include "derivatives.h"
+#include "writetex.h"
+#include "tree.h"
+#include "dump_tree.h"
 
 int MergeConstants (struct node_t *top);
 int MergeConstants2 (struct node_t *top);
@@ -55,7 +55,7 @@ struct node_t *Optimize (FILE *f, struct node_t *top)
         oldhash = HashTree (top);
         MergeConstants (top);
         MulZero (top);
-        //tree_dump (top);
+        tree_dump (top);
         top = MulOne (top);
         top = PlusZero (top);
         MergeConstants2 (top);
@@ -159,8 +159,8 @@ int MulZero (struct node_t *top)
     {
         top->data.kind = NUM;
         top->data.lex.num = 0;
-        free (top->left);
-        free (top->right);
+        DeleteTree (top->left);
+        DeleteTree (top->right);
         top->left  = NULL;
         top->right = NULL;
         return 0;

@@ -1,7 +1,7 @@
 #ifndef WRITETEX_INCLUDED
 #define WRITETEX_INCLUDED
 
-#include "../parser/parser.h"
+#include "parser.h"
 
 void PrintStart (FILE* f);
 void DumpDerivate (FILE *f, struct node_t *top);

@@ -3,12 +3,12 @@
 #include <assert.h>
 #include <string.h>
 
-#include "lexer/lexer.h"
-#include "parser/parser.h"
-#include "derivatives/derivatives.h"
-#include "writetex/writetex.h"
-#include "optimization/optimization.h"
-#include "tree/tree.h"
+#include "lexer.h"
+#include "parser.h"
+#include "derivatives.h"
+#include "writetex.h"
+#include "optimization.h"
+#include "tree.h"
 
 
 

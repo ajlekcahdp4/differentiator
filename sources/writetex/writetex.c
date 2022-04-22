@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "writetex.h"
-#include "../tree/tree.h"
+#include "tree.h"
 
 int PrintDerivate (FILE *f, struct node_t *top);
 

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "derivatives.h"
-#include "../writetex/writetex.h"
+#include "writetex.h"
 
 struct node_t *SubTreeCpy (const struct node_t *src)
 {

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "dump_tree.h"
-#include "../lexer/lexer.h"
-#include "../parser/parser.h"
+#include "lexer.h"
+#include "parser.h"
 
 
 

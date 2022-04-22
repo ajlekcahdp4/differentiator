@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "parser.h"
-#include "../dump_tree/dump_tree.h"
+#include "dump_tree.h"
 
 struct lexem_t current (struct lexer_state *pstate);
 int is_add        (struct lexer_state *pstate);
