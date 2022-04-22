@@ -49,4 +49,4 @@ include $(DEPS)
 
 .PHONY: clean
 clean:
-	rm -rf $(OBJS) $(DEPS) *.aux *.fdb_latexmk *.fls *.log *.pdf *.tex *synctex.gz differentiate *.dot *.png
+	rm -rf $(OBJS) $(DEPS) *.aux *.fdb_latexmk *.fls *.log *.pdf *.tex *synctex.gz differentiate *.dot *.png vgcore.*
