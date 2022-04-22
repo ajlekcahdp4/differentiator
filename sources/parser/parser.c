@@ -274,7 +274,7 @@ struct node_t *parse_factor (struct lexer_state *pstate)
             return 0;
         if (!is_r_brace (pstate))
         {
-            printf ("ERROR\n");
+            printf ("ERROR while parsing factor\n");
             return 0;
         }
         pstate->cur += 1;   

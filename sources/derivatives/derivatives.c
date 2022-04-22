@@ -4,8 +4,10 @@
 #include "derivatives.h"
 #include "../writetex/writetex.h"
 
-struct node_t *SubTreeCpy (struct node_t *src)
+struct node_t *SubTreeCpy (const struct node_t *src)
 {
+    if (src == NULL)
+        return NULL;
     struct node_t *dest = calloc (1, sizeof (struct node_t));
     dest->data.kind = src->data.kind;
     dest->data.lex = src->data.lex;
@@ -54,7 +56,7 @@ struct node_t *NewOp (enum operation_t op)
 }
 
 
-struct node_t *Derivate (struct node_t *top)
+struct node_t *Derivate (const struct node_t *top)
 {
     struct node_t *node = NULL;
 
@@ -87,7 +89,7 @@ struct node_t *Derivate (struct node_t *top)
 
             node->left->left   = Derivate   (top->left);
             node->left->right  = SubTreeCpy (top->right);
-            
+
             node->right->left  = SubTreeCpy (top->left);
             node->right->right = Derivate   (top->right);
             
